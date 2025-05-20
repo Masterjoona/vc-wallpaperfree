@@ -13,7 +13,7 @@ import { useStateFromStores } from "@webpack/common";
 import { Channel } from "discord-types/general";
 
 import { ChannelContextPatch, GuildContextPatch, UserContextPatch } from "./components/ctxmenu";
-import { GlobalDefaultComponent, Wallpaper } from "./components/util";
+import { GlobalDefaultComponent, TipsComponent, Wallpaper } from "./components/util";
 import { WallpaperFreeStore } from "./store";
 
 
@@ -23,12 +23,11 @@ const settings = definePluginSettings({
         type: OptionType.BOOLEAN,
         default: false,
     },
-    /* enableWallpaperStyles: {
-        description: "Doensn't have to be enabled and might cause issues such as embeds being transparent if used with a non-Nitro color theme",
-        type: OptionType.BOOLEAN,
-        default: false,
-        restartNeeded: true,
-    },*/
+    stylingTips: {
+        description: "",
+        type: OptionType.COMPONENT,
+        component: TipsComponent,
+    },
     globalDefault: {
         description: "Set a global default wallpaper for all channels.",
         type: OptionType.COMPONENT,
@@ -41,14 +40,6 @@ export default definePlugin({
     authors: [Devs.Joona],
     description: "Use the DM wallpapers anywhere or set a custom wallpaper",
     patches: [
-        /* {
-            find: ".handleSendMessage,onResize",
-            predicate: () => settings.store.enableWallpaperStyles,
-            replacement: {
-                match: /(?:\i\?)?(null==\i\?)void 0(:\i\.isViewable)(?::void 0)?/g,
-                replace: "true"
-            },
-        },*/
         {
             find: ".wallpaperContainer,",
             group: true,
@@ -62,8 +53,8 @@ export default definePlugin({
                     replace: "$&vcWpFreeCustom||"
                 },
                 {
-                    match: /(\i=)(.{1,50}""\))/,
-                    replace: "$1arguments[0].chatWallpaperState.vcWallpaperUrl||$2"
+                    match: /(\i)=(.{1,50}asset.+?(?=,\i=))(?=.+?concat\(\1)/,
+                    replace: "$1=arguments[0].chatWallpaperState.vcWallpaperUrl||($2)"
                 },
                 {
                     match: /(\i\.isViewable&&)(null!=\i)/,
