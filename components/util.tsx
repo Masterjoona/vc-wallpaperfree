@@ -50,23 +50,3 @@ export function TipsComponent() {
     }`;
     return Parser.parse(makeCodeblock(tipText, "css"));
 }
-
-export interface Wallpaper {
-    id: string;
-    label: string;
-    default: Default;
-    variants: Variants;
-    isBlurred: boolean;
-    designGroupId: string;
-}
-
-export interface Default {
-    asset: string;
-    icon: string;
-    thumbhash: string;
-    opacity?: number;
-}
-
-export interface Variants {
-    dark: Default;
-}
