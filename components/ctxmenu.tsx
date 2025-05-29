@@ -8,18 +8,10 @@ import { NavContextMenuPatchCallback } from "@api/ContextMenu";
 import { openModal } from "@utils/modal";
 import { ChannelStore, FluxDispatcher, Menu } from "@webpack/common";
 
-import { SetCustomWallpaperModal, SetDiscordWallpaperModal } from "./modal";
-import { ChatWallpaperStore, fetchWallpapers } from "./util";
+import { SetCustomWallpaperModal } from "./modal";
 
 
 const addWallpaperMenu = (channelId?: string, guildId?: string) => {
-    let discordWpGone = false;
-    try {
-        ChatWallpaperStore.wallpapers;
-    } catch (e) {
-        discordWpGone = true;
-    }
-
     const setWallpaper = (url?: string) => {
         FluxDispatcher.dispatch({
             // @ts-ignore
@@ -36,15 +28,6 @@ const addWallpaperMenu = (channelId?: string, guildId?: string) => {
                 label="Set custom wallpaper"
                 id="vc-wpfree-set-custom"
                 action={() => openModal(props => <SetCustomWallpaperModal props={props} onSelect={setWallpaper} />)}
-            />
-            <Menu.MenuItem
-                label="Set a Discord wallpaper"
-                id="vc-wpfree-set-discord"
-                disabled={discordWpGone}
-                action={async () => {
-                    ChatWallpaperStore.shouldFetchWallpapers && await fetchWallpapers();
-                    openModal(props => <SetDiscordWallpaperModal props={props} onSelect={setWallpaper} />);
-                }}
             />
             <Menu.MenuSeparator />
             <Menu.MenuItem

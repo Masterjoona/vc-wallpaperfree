@@ -6,13 +6,9 @@
 
 import { openModal } from "@utils/modal";
 import { makeCodeblock } from "@utils/text";
-import { findByCodeLazy, findStoreLazy } from "@webpack";
 import { Button, FluxDispatcher, Parser } from "@webpack/common";
 
-import { SetCustomWallpaperModal, SetDiscordWallpaperModal } from "./modal";
-
-export const ChatWallpaperStore = findStoreLazy("ChatWallpaperStore");
-export const fetchWallpapers = findByCodeLazy('type:"FETCH_CHAT_WALLPAPERS_SUCCESS"');
+import { SetCustomWallpaperModal } from "./modal";
 
 export function GlobalDefaultComponent() {
     const setGlobal = (url?: string) => {
@@ -23,23 +19,11 @@ export function GlobalDefaultComponent() {
         });
     };
 
-    let discordWpGone = false;
-    try {
-        ChatWallpaperStore.wallpapers;
-    } catch (e) {
-        discordWpGone = true;
-    }
-
     return (
         <>
             <Button onClick={() => {
                 openModal(props => <SetCustomWallpaperModal props={props} onSelect={setGlobal} />);
             }}>Set a global custom wallpaper</Button>
-
-            <Button disabled={discordWpGone} onClick={async () => {
-                ChatWallpaperStore.shouldFetchWallpapers && await fetchWallpapers();
-                openModal(props => <SetDiscordWallpaperModal props={props} onSelect={setGlobal} />);
-            }}>Set a global Discord wallpaper</Button>
 
             <Button
                 color={Button.Colors.RED}

@@ -76,7 +76,7 @@ export default definePlugin({
         if (!url) return null;
 
         return <ErrorBoundary noop>
-            <div className="vc-wpfree-wp-container wallpaperContainer" style={{
+            <div className="wallpaperContainer vc-wpfree-wp-container" style={{
                 backgroundImage: `url(${url})`,
             }}></div>
         </ErrorBoundary>;

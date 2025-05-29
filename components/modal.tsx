@@ -6,10 +6,9 @@
 
 import { CheckedTextInput } from "@components/CheckedTextInput";
 import { ModalContent, ModalHeader, ModalProps, ModalRoot, ModalSize } from "@utils/modal";
-import { Button, lodash, Text, TextInput, useState, useStateFromStores } from "@webpack/common";
+import { Button, Text, TextInput, useState } from "@webpack/common";
 
 import { settings } from "..";
-import { ChatWallpaperStore, Wallpaper } from "./util";
 
 interface Props {
     props: ModalProps;
@@ -86,54 +85,3 @@ export function SetCustomWallpaperModal({ props, onSelect }: Props) {
         </ModalRoot>
     );
 }
-
-export function SetDiscordWallpaperModal({ props, onSelect }: Props) {
-    const discordWallpapers: Wallpaper[] = useStateFromStores([ChatWallpaperStore], () => ChatWallpaperStore.wallpapers);
-
-    return (
-        <ModalRoot {...props} size={ModalSize.MEDIUM}>
-            <ModalHeader>
-                <Text variant="heading-lg/normal" style={{ marginBottom: 8 }}>
-                    Choose a Discord Wallpaper
-                </Text>
-            </ModalHeader>
-            <ModalContent>
-                <div className="vc-wpfree-discord-wp-modal">
-                    {lodash.chunk(discordWallpapers, 2).map(group => {
-                        const main = group[0];
-                        return (
-                            <div key={main.id} className="vc-wpfree-discord-wp-icon-container">
-                                <figure style={{ margin: 0, textAlign: "center" }}>
-                                    <img
-                                        className="vc-wpfree-discord-wp-icon-img"
-                                        src={`https://cdn.discordapp.com/assets/content/${main.default.icon}`}
-                                        alt={main.label}
-                                    />
-                                    <figcaption>
-                                        <Text variant="text-md/normal">{main.label}</Text>
-                                    </figcaption>
-                                </figure>
-                                <div className="vc-wpfree-discord-set-buttons">
-                                    {group.map(wp => (
-                                        <Button
-                                            key={wp.id}
-                                            size={Button.Sizes.SMALL}
-                                            color={Button.Colors.BRAND}
-                                            onClick={() => {
-                                                onSelect(`https://cdn.discordapp.com/assets/content/${wp.default.asset}`);
-                                                props.onClose();
-                                            }}
-                                        >
-                                            {wp.isBlurred ? "Blurred" : "Normal"}
-                                        </Button>
-                                    ))}
-                                </div>
-                            </div>
-                        );
-                    })}
-                </div>
-            </ModalContent>
-        </ModalRoot>
-    );
-}
-
