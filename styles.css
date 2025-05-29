@@ -1,7 +1,7 @@
 .vc-wpfree-discord-wp-modal {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 24;
+    gap: 24px;
     padding: 8px 0;
 }
 
@@ -27,4 +27,13 @@
     display: flex;
     gap: 8px;
     margin-top: 12px
+}
+
+.vc-wpfree-wp-container,
+.wallpaperContainer {
+    background-position: 100% 100%;
+    background-repeat: no-repeat;
+    background-size: cover;
+    inset: 0;
+    position: absolute;
 }

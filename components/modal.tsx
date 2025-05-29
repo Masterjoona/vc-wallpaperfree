@@ -4,15 +4,31 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import { CheckedTextInput } from "@components/CheckedTextInput";
 import { ModalContent, ModalHeader, ModalProps, ModalRoot, ModalSize } from "@utils/modal";
 import { Button, lodash, Text, TextInput, useState, useStateFromStores } from "@webpack/common";
 
+import { settings } from "..";
 import { ChatWallpaperStore, Wallpaper } from "./util";
 
 interface Props {
     props: ModalProps;
     onSelect: (url: string) => void;
 }
+
+const whiteListedDomains = [
+    ".github.io",
+    "raw.githubusercontent.com",
+    ".gitlab.io",
+    "gitlab.com",
+    ".codeberg.page",
+    "codeberg.org",
+    ".githack.com",
+    "i.imgur.com",
+    "i.ibb.co",
+    "cdn.discordapp.com",
+    "media.discordapp.net"
+];
 
 export function SetCustomWallpaperModal({ props, onSelect }: Props) {
     const [url, setUrl] = useState("");
@@ -27,12 +43,19 @@ export function SetCustomWallpaperModal({ props, onSelect }: Props) {
             <ModalContent>
                 <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
 
-                    <TextInput
+                    {IS_WEB || settings.store.allowAllImageSources ? (<TextInput
                         placeholder="The image url"
                         value={url}
                         onChange={setUrl}
                         autoFocus
-                    />
+                    />) :
+                        <CheckedTextInput
+                            value={url}
+                            onChange={setUrl}
+                            validate={u => whiteListedDomains.some(d => d.includes(u)) ? true : `Image must be hosted on one of: ${whiteListedDomains.join(", ")}`
+                            }
+                        />
+                    }
                     {url && (
                         <img
                             src={url}

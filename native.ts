@@ -1,0 +1,20 @@
+/*
+ * Vencord, a Discord client mod
+ * Copyright (c) 2025 Vendicated and contributors
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
+import { RendererSettings } from "@main/settings";
+import { IpcMainInvokeEvent } from "electron";
+
+// @ts-ignore
+import("@main/csp").then(({ CspPolicies }) => {
+    const settings = RendererSettings.store.plugins?.WallpaperFree;
+    if (settings?.enabled && settings.allowAllImageSources) {
+        CspPolicies["*"] = ["img-src"];
+    }
+}).catch(() => { });
+
+
+
+export function dummy(e: IpcMainInvokeEvent) { }

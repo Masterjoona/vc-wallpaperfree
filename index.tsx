@@ -7,21 +7,23 @@
 import "./styles.css";
 
 import { definePluginSettings } from "@api/Settings";
+import { ErrorBoundary } from "@components/index";
 import { Devs } from "@utils/constants";
 import definePlugin, { OptionType } from "@utils/types";
 import { useStateFromStores } from "@webpack/common";
 import { Channel } from "discord-types/general";
 
 import { ChannelContextPatch, GuildContextPatch, UserContextPatch } from "./components/ctxmenu";
-import { GlobalDefaultComponent, TipsComponent, Wallpaper } from "./components/util";
+import { GlobalDefaultComponent, TipsComponent } from "./components/util";
 import { WallpaperFreeStore } from "./store";
 
 
-const settings = definePluginSettings({
+export const settings = definePluginSettings({
     forceReplace: {
         description: "If a dm wallpaper is already set, your custom wallpaper will be used instead.",
         type: OptionType.BOOLEAN,
         default: false,
+        hidden: true,
     },
     stylingTips: {
         description: "",
@@ -32,34 +34,33 @@ const settings = definePluginSettings({
         description: "Set a global default wallpaper for all channels.",
         type: OptionType.COMPONENT,
         component: GlobalDefaultComponent
+    },
+    allowAllImageSources: {
+        description: "Allow all image sources, even if they are not whitelisted.",
+        type: OptionType.BOOLEAN,
+        default: true,
+        target: "DESKTOP",
+        restartNeeded: true,
     }
 });
 
 export default definePlugin({
     name: "WallpaperFree",
     authors: [Devs.Joona],
-    description: "Use the DM wallpapers anywhere or set a custom wallpaper",
+    description: "Recreation of the old DM wallpaper experiment; Set a background image for any channel or server.",
     patches: [
         {
-            find: ".wallpaperContainer,",
+            find: ".handleSendMessage,onResize",
             group: true,
             replacement: [
                 {
-                    match: /return null==(\i).+?\?null:/,
-                    replace: "const vcWpFreeCustom = $self.customWallpaper(arguments[0].channel,$1);return !($1||vcWpFreeCustom)?null:"
+                    match: /return.{1,150},(?=keyboardModeEnabled)/,
+                    replace: "const vcWallpaperFreeUrl=$self.WallpaperState(arguments[0].channel);$&vcWallpaperFreeUrl,"
                 },
                 {
-                    match: /,{chatWallpaperState:/,
-                    replace: "$&vcWpFreeCustom||"
-                },
-                {
-                    match: /(\i)=(.{1,50}asset.+?(?=,\i=))(?=.+?concat\(\1)/,
-                    replace: "$1=arguments[0].chatWallpaperState.vcWallpaperUrl||($2)"
-                },
-                {
-                    match: /(\i\.isViewable&&)(null!=\i)/,
-                    replace: "$1($2||arguments[0].chatWallpaperState.vcWallpaperUrl)"
-                },
+                    match: /children:\[(?=.{1,300}eTzKk5)/,
+                    replace: "$&$self.Wallpaper({url:this.props.vcWallpaperFreeUrl}),"
+                }
             ]
         }
     ],
@@ -71,21 +72,16 @@ export default definePlugin({
         "guild-context": GuildContextPatch,
         "gdm-context": ChannelContextPatch,
     },
-    customWallpaper(channel: Channel, wp: Wallpaper | undefined) {
-        const { forceReplace } = settings.use(["forceReplace"]);
-        const url = useStateFromStores([WallpaperFreeStore], () => WallpaperFreeStore.getUrl(channel));
+    Wallpaper({ url }: { url: string; }) {
+        if (!url) return null;
 
-        if (!forceReplace && wp?.id)
-            return wp;
-
-        if (url) {
-            return {
-                wallpaperId: "id",
-                vcWallpaperUrl: url,
-                isViewable: true,
-            };
-        }
-
-        return void 0;
+        return <ErrorBoundary noop>
+            <div className="vc-wpfree-wp-container wallpaperContainer" style={{
+                backgroundImage: `url(${url})`,
+            }}></div>
+        </ErrorBoundary>;
     },
+    WallpaperState(channel: Channel) {
+        return useStateFromStores([WallpaperFreeStore], () => WallpaperFreeStore.getUrl(channel));
+    }
 });

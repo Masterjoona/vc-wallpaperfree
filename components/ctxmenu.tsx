@@ -13,6 +13,13 @@ import { ChatWallpaperStore, fetchWallpapers } from "./util";
 
 
 const addWallpaperMenu = (channelId?: string, guildId?: string) => {
+    let discordWpGone = false;
+    try {
+        ChatWallpaperStore.wallpapers;
+    } catch (e) {
+        discordWpGone = true;
+    }
+
     const setWallpaper = (url?: string) => {
         FluxDispatcher.dispatch({
             // @ts-ignore
@@ -22,6 +29,7 @@ const addWallpaperMenu = (channelId?: string, guildId?: string) => {
             url,
         });
     };
+
     return (
         <Menu.MenuItem label="Wallpaper Free" key="vc-wpfree-menu" id="vc-wpfree-menu">
             <Menu.MenuItem
@@ -32,6 +40,7 @@ const addWallpaperMenu = (channelId?: string, guildId?: string) => {
             <Menu.MenuItem
                 label="Set a Discord wallpaper"
                 id="vc-wpfree-set-discord"
+                disabled={discordWpGone}
                 action={async () => {
                     ChatWallpaperStore.shouldFetchWallpapers && await fetchWallpapers();
                     openModal(props => <SetDiscordWallpaperModal props={props} onSelect={setWallpaper} />);

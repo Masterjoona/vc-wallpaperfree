@@ -23,13 +23,20 @@ export function GlobalDefaultComponent() {
         });
     };
 
+    let discordWpGone = false;
+    try {
+        ChatWallpaperStore.wallpapers;
+    } catch (e) {
+        discordWpGone = true;
+    }
+
     return (
         <>
             <Button onClick={() => {
                 openModal(props => <SetCustomWallpaperModal props={props} onSelect={setGlobal} />);
             }}>Set a global custom wallpaper</Button>
 
-            <Button onClick={async () => {
+            <Button disabled={discordWpGone} onClick={async () => {
                 ChatWallpaperStore.shouldFetchWallpapers && await fetchWallpapers();
                 openModal(props => <SetDiscordWallpaperModal props={props} onSelect={setGlobal} />);
             }}>Set a global Discord wallpaper</Button>
@@ -52,7 +59,7 @@ export function GlobalDefaultComponent() {
 
 export function TipsComponent() {
     const tipText = `
-    [class^=wallpaperContainer] {
+    .vc-wpfree-wp-container {
         transform: scaleX(-1); /* flip it horizontally */
         filter: blur(4px); /* apply a blur */
         opacity: 0.7; /* self-explanatory */
