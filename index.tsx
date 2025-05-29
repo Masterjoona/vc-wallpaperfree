@@ -58,8 +58,8 @@ export default definePlugin({
                     replace: "const vcWallpaperFreeUrl=$self.WallpaperState(arguments[0].channel);$&vcWallpaperFreeUrl,"
                 },
                 {
-                    match: /children:\[(?=.{1,300}eTzKk5)/,
-                    replace: "$&$self.Wallpaper({url:this.props.vcWallpaperFreeUrl}),"
+                    match: /}\)]}\)](?=.{1,30}messages-)/,
+                    replace: "$&.toSpliced(0,0,$self.Wallpaper({url:this.props.vcWallpaperFreeUrl}))"
                 }
             ]
         }
@@ -73,6 +73,7 @@ export default definePlugin({
         "gdm-context": ChannelContextPatch,
     },
     Wallpaper({ url }: { url: string; }) {
+        // no we cant place the hook here
         if (!url) return null;
 
         return <ErrorBoundary noop>
