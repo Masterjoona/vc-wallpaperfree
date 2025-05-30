@@ -19,12 +19,6 @@ import { WallpaperFreeStore } from "./store";
 
 
 export const settings = definePluginSettings({
-    forceReplace: {
-        description: "If a dm wallpaper is already set, your custom wallpaper will be used instead.",
-        type: OptionType.BOOLEAN,
-        default: false,
-        hidden: true,
-    },
     stylingTips: {
         description: "",
         type: OptionType.COMPONENT,
@@ -35,10 +29,10 @@ export const settings = definePluginSettings({
         type: OptionType.COMPONENT,
         component: GlobalDefaultComponent
     },
-    allowAllImageSources: {
-        description: "Allow all image sources, even if they are not whitelisted.",
-        type: OptionType.BOOLEAN,
-        default: true,
+    customWhiteListedDomains: {
+        description: "Add more images sources to csp. e.g *.example.com;website.com",
+        type: OptionType.STRING,
+        default: "",
         target: "DESKTOP",
         restartNeeded: true,
     }

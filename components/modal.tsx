@@ -15,20 +15,6 @@ interface Props {
     onSelect: (url: string) => void;
 }
 
-const whiteListedDomains = [
-    ".github.io",
-    "raw.githubusercontent.com",
-    ".gitlab.io",
-    "gitlab.com",
-    ".codeberg.page",
-    "codeberg.org",
-    ".githack.com",
-    "i.imgur.com",
-    "i.ibb.co",
-    "cdn.discordapp.com",
-    "media.discordapp.net"
-];
-
 export function SetCustomWallpaperModal({ props, onSelect }: Props) {
     const [url, setUrl] = useState("");
 
@@ -41,8 +27,7 @@ export function SetCustomWallpaperModal({ props, onSelect }: Props) {
             </ModalHeader>
             <ModalContent>
                 <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-
-                    {IS_WEB || settings.store.allowAllImageSources ? (<TextInput
+                    {IS_WEB ? (<TextInput
                         placeholder="The image url"
                         value={url}
                         onChange={setUrl}
@@ -51,8 +36,22 @@ export function SetCustomWallpaperModal({ props, onSelect }: Props) {
                         <CheckedTextInput
                             value={url}
                             onChange={setUrl}
-                            validate={u => whiteListedDomains.some(d => d.includes(u)) ? true : `Image must be hosted on one of: ${whiteListedDomains.join(", ")}`
-                            }
+                            validate={u => {
+                                const allWhitelistedDomains = settings.store.customWhiteListedDomains.split(";").map(d => d.trim()).concat([
+                                    ".github.io",
+                                    "raw.githubusercontent.com",
+                                    ".gitlab.io",
+                                    "gitlab.com",
+                                    ".codeberg.page",
+                                    "codeberg.org",
+                                    ".githack.com",
+                                    "i.imgur.com",
+                                    "i.ibb.co",
+                                    "cdn.discordapp.com",
+                                    "media.discordapp.net"
+                                ]);
+                                return allWhitelistedDomains.some(d => u.includes(d)) ? true : `Image must be hosted on one of: ${allWhitelistedDomains.join(", ")}`;
+                            }}
                         />
                     }
                     {url && (

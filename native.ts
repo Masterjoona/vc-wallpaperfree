@@ -10,8 +10,10 @@ import { IpcMainInvokeEvent } from "electron";
 // @ts-ignore
 import("@main/csp").then(({ CspPolicies }) => {
     const settings = RendererSettings.store.plugins?.WallpaperFree;
-    if (settings?.enabled && settings.allowAllImageSources) {
-        CspPolicies["*"] = ["img-src"];
+    if (settings?.enabled && settings?.customWhiteListedDomains) {
+        for (const domain of settings.customWhiteListedDomains.split(";")) {
+            CspPolicies[domain.trim()] = ["img-src"];
+        }
     }
 }).catch(() => { });
 
