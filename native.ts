@@ -5,13 +5,15 @@
  */
 
 import { RendererSettings } from "@main/settings";
+// @ts-ignore
+import domains from "csp_domains.txt";
 import { IpcMainInvokeEvent } from "electron";
 
 // @ts-ignore
 import("@main/csp").then(({ CspPolicies }) => {
     const settings = RendererSettings.store.plugins?.WallpaperFree;
-    if (settings?.enabled && settings?.customWhiteListedDomains) {
-        for (const domain of settings.customWhiteListedDomains.split(";")) {
+    if (settings?.enabled) {
+        for (const domain of domains.split("\n").filter((l: string) => !l.startsWith("#"))) {
             CspPolicies[domain.trim()] = ["img-src"];
         }
     }

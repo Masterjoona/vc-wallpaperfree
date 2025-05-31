@@ -10,7 +10,7 @@ import { definePluginSettings } from "@api/Settings";
 import { ErrorBoundary } from "@components/index";
 import { Devs } from "@utils/constants";
 import definePlugin, { OptionType } from "@utils/types";
-import { useStateFromStores } from "@webpack/common";
+import { Text, useStateFromStores } from "@webpack/common";
 import { Channel } from "discord-types/general";
 
 import { ChannelContextPatch, GuildContextPatch, UserContextPatch } from "./components/ctxmenu";
@@ -19,22 +19,29 @@ import { WallpaperFreeStore } from "./store";
 
 
 export const settings = definePluginSettings({
-    stylingTips: {
-        description: "",
-        type: OptionType.COMPONENT,
-        component: TipsComponent,
-    },
     globalDefault: {
         description: "Set a global default wallpaper for all channels.",
         type: OptionType.COMPONENT,
         component: GlobalDefaultComponent
     },
-    customWhiteListedDomains: {
-        description: "Add more images sources to csp. e.g *.example.com;website.com",
-        type: OptionType.STRING,
-        default: "",
+    stylingTips: {
+        description: "",
+        type: OptionType.COMPONENT,
+        component: TipsComponent,
+    },
+    customDomainsForCSP: {
+        description: "",
+        type: OptionType.COMPONENT,
         target: "DESKTOP",
-        restartNeeded: true,
+        component: () => {
+            return (
+                <div>
+                    <Text>
+                        if you wish to load images from sites that aren't whitelisted by vencord's or discord's csp you will have to modify a text file in the plugin folder, rebuild and so on
+                    </Text>
+                </div>
+            );
+        }
     }
 });
 

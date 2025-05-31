@@ -8,7 +8,22 @@ import { CheckedTextInput } from "@components/CheckedTextInput";
 import { ModalContent, ModalHeader, ModalProps, ModalRoot, ModalSize } from "@utils/modal";
 import { Button, Text, TextInput, useState } from "@webpack/common";
 
-import { settings } from "..";
+// @ts-ignore
+import domains from "../csp_domains.txt";
+
+const allWhitelistedDomains: string[] = domains.split("\n").filter((l: string) => !l.startsWith("#")).concat([
+    ".github.io",
+    "raw.githubusercontent.com",
+    ".gitlab.io",
+    "gitlab.com",
+    ".codeberg.page",
+    "codeberg.org",
+    ".githack.com",
+    "i.imgur.com",
+    "i.ibb.co",
+    "cdn.discordapp.com",
+    "media.discordapp.net"
+]);
 
 interface Props {
     props: ModalProps;
@@ -36,22 +51,7 @@ export function SetCustomWallpaperModal({ props, onSelect }: Props) {
                         <CheckedTextInput
                             value={url}
                             onChange={setUrl}
-                            validate={u => {
-                                const allWhitelistedDomains = settings.store.customWhiteListedDomains.split(";").map(d => d.trim()).concat([
-                                    ".github.io",
-                                    "raw.githubusercontent.com",
-                                    ".gitlab.io",
-                                    "gitlab.com",
-                                    ".codeberg.page",
-                                    "codeberg.org",
-                                    ".githack.com",
-                                    "i.imgur.com",
-                                    "i.ibb.co",
-                                    "cdn.discordapp.com",
-                                    "media.discordapp.net"
-                                ]);
-                                return allWhitelistedDomains.some(d => u.includes(d)) ? true : `Image must be hosted on one of: ${allWhitelistedDomains.join(", ")}`;
-                            }}
+                            validate={u => allWhitelistedDomains.some(d => u.includes(d)) ? true : `Image must be hosted on one of: ${allWhitelistedDomains.join(", ")}`}
                         />
                     }
                     {url && (

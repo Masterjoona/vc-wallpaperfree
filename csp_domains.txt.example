@@ -1,0 +1,5 @@
+# cp csp_domains.txt.example csp_domains.txt
+# allow loading images from these domains
+# *.example.com
+# i.pximg.net
+# comment with a #
