@@ -8,23 +8,6 @@ import { CheckedTextInput } from "@components/CheckedTextInput";
 import { ModalContent, ModalHeader, ModalProps, ModalRoot, ModalSize } from "@utils/modal";
 import { Button, Text, TextInput, useState } from "@webpack/common";
 
-// @ts-ignore
-import domains from "../csp_domains.txt";
-
-const allWhitelistedDomains: string[] = domains.split("\n").filter((l: string) => !l.startsWith("#")).concat([
-    ".github.io",
-    "raw.githubusercontent.com",
-    ".gitlab.io",
-    "gitlab.com",
-    ".codeberg.page",
-    "codeberg.org",
-    ".githack.com",
-    "i.imgur.com",
-    "i.ibb.co",
-    "cdn.discordapp.com",
-    "media.discordapp.net"
-]);
-
 interface Props {
     props: ModalProps;
     onSelect: (url: string) => void;
@@ -42,8 +25,10 @@ export function SetCustomWallpaperModal({ props, onSelect }: Props) {
             </ModalHeader>
             <ModalContent>
                 <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                    <Text>
+                        The image url
+                    </Text>
                     {IS_WEB ? (<TextInput
-                        placeholder="The image url"
                         value={url}
                         onChange={setUrl}
                         autoFocus
@@ -51,7 +36,10 @@ export function SetCustomWallpaperModal({ props, onSelect }: Props) {
                         <CheckedTextInput
                             value={url}
                             onChange={setUrl}
-                            validate={u => allWhitelistedDomains.some(d => u.includes(d)) ? true : `Image must be hosted on one of: ${allWhitelistedDomains.join(", ")}`}
+                            validate={u => {
+                                // @ts-ignore
+                                return Vencord.Plugins.plugins.WallpaperFree.whiteListedDomains.some((d: string) => u.includes(d)) ? true : `Image must be hosted on one of: ${Vencord.Plugins.plugins.WallpaperFree.whiteListedDomains.join(", ")}`;
+                            }}
                         />
                     }
                     {url && (

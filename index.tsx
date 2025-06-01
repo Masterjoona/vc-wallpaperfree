@@ -9,7 +9,7 @@ import "./styles.css";
 import { definePluginSettings } from "@api/Settings";
 import { ErrorBoundary } from "@components/index";
 import { Devs } from "@utils/constants";
-import definePlugin, { OptionType } from "@utils/types";
+import definePlugin, { OptionType, PluginNative } from "@utils/types";
 import { Text, useStateFromStores } from "@webpack/common";
 import { Channel } from "discord-types/general";
 
@@ -85,5 +85,10 @@ export default definePlugin({
     },
     WallpaperState(channel: Channel) {
         return useStateFromStores([WallpaperFreeStore], () => WallpaperFreeStore.getUrl(channel));
+    },
+    async start() {
+        if (IS_WEB) return;
+        const Native = VencordNative.pluginHelpers.WallpaperFree as PluginNative<typeof import("./native")>;
+        this.whiteListedDomains = await Native.getWhiteListedDomains();
     }
 });

@@ -7,19 +7,31 @@
 import { RendererSettings } from "@main/settings";
 import { IpcMainInvokeEvent } from "electron";
 
-// @ts-ignore
-import domains from "./csp_domains.txt";
+const whiteListedDomains: string[] = [];
 
 // @ts-ignore
-import("@main/csp").then(({ CspPolicies }) => {
+import("@main/csp").then(({ CspPolicies }: { CspPolicies: Record<string, string[]>; }) => {
     const settings = RendererSettings.store.plugins?.WallpaperFree;
     if (settings?.enabled) {
-        for (const domain of domains.split("\n").filter((l: string) => !l.startsWith("#"))) {
-            CspPolicies[domain.trim()] = ["img-src"];
+        // @ts-ignore
+        import("./csp_domains.txt").then(({ default: domains }: { default: string; }) => {
+            for (const domain of domains.split("\n").filter((l: string) => !l.startsWith("#"))) {
+                const trimmedDomain = domain.trim();
+                if (!trimmedDomain) continue;
+                CspPolicies[trimmedDomain] = ["img-src"];
+                whiteListedDomains.push(trimmedDomain);
+            }
+        }).catch(() => { });
+    }
+    for (const [domain, policy] of Object.entries(CspPolicies)) {
+        if (policy.includes("img-src")) {
+            whiteListedDomains.push(domain);
         }
     }
 }).catch(() => { });
 
 
 
-export function dummy(e: IpcMainInvokeEvent) { }
+export function getWhiteListedDomains(_: IpcMainInvokeEvent) {
+    return whiteListedDomains;
+}
