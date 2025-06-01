@@ -15,9 +15,9 @@ import("@main/csp").then(({ CspPolicies }: { CspPolicies: Record<string, string[
     if (settings?.enabled) {
         // @ts-ignore
         import("./csp_domains.txt").then(({ default: domains }: { default: string; }) => {
-            for (const domain of domains.split("\n").filter((l: string) => !l.startsWith("#"))) {
+            for (const domain of domains.split("\n")) {
                 const trimmedDomain = domain.trim();
-                if (!trimmedDomain) continue;
+                if (!trimmedDomain || trimmedDomain.startsWith("#")) continue;
                 CspPolicies[trimmedDomain] = ["img-src"];
                 whiteListedDomains.push(trimmedDomain);
             }
