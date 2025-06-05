@@ -13,39 +13,37 @@ interface Props {
     onSelect: (url: string) => void;
 }
 
-export function SetCustomWallpaperModal({ props, onSelect }: Props) {
+export function SetWallpaperModal({ props, onSelect }: Props) {
     const [url, setUrl] = useState("");
 
     return (
         <ModalRoot {...props} size={ModalSize.SMALL}>
             <ModalHeader>
                 <Text variant="heading-lg/normal" style={{ marginBottom: 8 }}>
-                    Set a custom wallpaper
+                    Set wallpaper
                 </Text>
             </ModalHeader>
             <ModalContent>
                 <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-                    <Text>
-                        The image url
-                    </Text>
-                    {IS_WEB ? (<TextInput
-                        value={url}
-                        onChange={setUrl}
-                        autoFocus
-                    />) :
-                        <CheckedTextInput
+                    <Text>The image url</Text>
+                    { // @ts-ignore
+                        IS_WEB || !Vencord.Plugins.plugins.WallpaperFree.CSPInfo.cspEnabled ? (<TextInput
                             value={url}
                             onChange={setUrl}
-                            validate={u => {
-                                // @ts-ignore
-                                return Vencord.Plugins.plugins.WallpaperFree.whiteListedDomains.some((d: string) => u.includes(d)) ? true : `Image must be hosted on one of: ${Vencord.Plugins.plugins.WallpaperFree.whiteListedDomains.join(", ")}`;
-                            }}
-                        />
+                            autoFocus
+                        />) :
+                            <CheckedTextInput
+                                value={url}
+                                onChange={setUrl}
+                                validate={u => {
+                                    // @ts-ignore
+                                    return Vencord.Plugins.plugins.WallpaperFree.CSPInfo.whiteListedDomains.some((d: string) => u.includes(d)) ? true : `Image must be hosted on one of: ${Vencord.Plugins.plugins.WallpaperFree.CSPInfo.whiteListedDomains.join(", ")}`;
+                                }}
+                            />
                     }
                     {url && (
                         <img
                             src={url}
-                            alt="Wallpaper preview"
                             style={{
                                 display: "block",
                                 width: "100%",

@@ -8,7 +8,7 @@ import { openModal } from "@utils/modal";
 import { makeCodeblock } from "@utils/text";
 import { Button, FluxDispatcher, Parser } from "@webpack/common";
 
-import { SetCustomWallpaperModal } from "./modal";
+import { SetWallpaperModal } from "./modal";
 
 export function GlobalDefaultComponent() {
     const setGlobal = (url?: string) => {
@@ -22,8 +22,8 @@ export function GlobalDefaultComponent() {
     return (
         <>
             <Button onClick={() => {
-                openModal(props => <SetCustomWallpaperModal props={props} onSelect={setGlobal} />);
-            }}>Set a global custom wallpaper</Button>
+                openModal(props => <SetWallpaperModal props={props} onSelect={setGlobal} />);
+            }}>Set a global wallpaper</Button>
 
             <Button
                 color={Button.Colors.RED}

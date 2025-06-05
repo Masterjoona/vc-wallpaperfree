@@ -89,6 +89,6 @@ export default definePlugin({
     async start() {
         if (IS_WEB) return;
         const Native = VencordNative.pluginHelpers.WallpaperFree as PluginNative<typeof import("./native")>;
-        this.whiteListedDomains = await Native.getWhiteListedDomains();
+        this.CSPInfo = await Native.getCSPInfo();
     }
 });
