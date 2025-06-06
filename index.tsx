@@ -10,11 +10,11 @@ import { definePluginSettings } from "@api/Settings";
 import { ErrorBoundary } from "@components/index";
 import { Devs } from "@utils/constants";
 import definePlugin, { OptionType, PluginNative } from "@utils/types";
-import { Text, useStateFromStores } from "@webpack/common";
+import { useStateFromStores } from "@webpack/common";
 import { Channel } from "discord-types/general";
 
 import { ChannelContextPatch, GuildContextPatch, UserContextPatch } from "./components/ctxmenu";
-import { GlobalDefaultComponent, TipsComponent } from "./components/util";
+import { CspSettingsComponent, GlobalDefaultComponent, TipsComponent } from "./components/util";
 import { WallpaperFreeStore } from "./store";
 
 
@@ -33,15 +33,7 @@ export const settings = definePluginSettings({
         description: "",
         type: OptionType.COMPONENT,
         target: "DESKTOP",
-        component: () => {
-            return (
-                <div>
-                    <Text>
-                        if you wish to load images from sites that aren't whitelisted by vencord's or discord's csp you will have to modify a text file in the plugin folder, rebuild and so on
-                    </Text>
-                </div>
-            );
-        }
+        component: CspSettingsComponent
     }
 });
 
@@ -90,5 +82,6 @@ export default definePlugin({
         if (IS_WEB) return;
         const Native = VencordNative.pluginHelpers.WallpaperFree as PluginNative<typeof import("./native")>;
         this.CSPInfo = await Native.getCSPInfo();
+        this.Native = Native;
     }
 });
