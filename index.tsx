@@ -9,12 +9,12 @@ import "./styles.css";
 import { definePluginSettings } from "@api/Settings";
 import { ErrorBoundary } from "@components/index";
 import { Devs } from "@utils/constants";
-import definePlugin, { OptionType, PluginNative } from "@utils/types";
+import definePlugin, { OptionType } from "@utils/types";
 import { useStateFromStores } from "@webpack/common";
 import { Channel } from "discord-types/general";
 
 import { ChannelContextPatch, GuildContextPatch, UserContextPatch } from "./components/ctxmenu";
-import { CspSettingsComponent, GlobalDefaultComponent, TipsComponent } from "./components/util";
+import { GlobalDefaultComponent, TipsComponent } from "./components/util";
 import { WallpaperFreeStore } from "./store";
 
 
@@ -29,12 +29,6 @@ export const settings = definePluginSettings({
         type: OptionType.COMPONENT,
         component: TipsComponent,
     },
-    customDomainsForCSP: {
-        description: "",
-        type: OptionType.COMPONENT,
-        target: "DESKTOP",
-        component: CspSettingsComponent
-    }
 });
 
 export default definePlugin({
@@ -70,7 +64,7 @@ export default definePlugin({
         if (!url) return null;
 
         return <ErrorBoundary noop>
-            <div className="wallpaperContainer vc-wpfree-wp-container" style={{
+            <div className="vc-wpfree-wp-container" style={{
                 backgroundImage: `url(${url})`,
             }}></div>
         </ErrorBoundary>;
@@ -78,10 +72,4 @@ export default definePlugin({
     WallpaperState(channel: Channel) {
         return useStateFromStores([WallpaperFreeStore], () => WallpaperFreeStore.getUrl(channel));
     },
-    async start() {
-        if (IS_WEB) return;
-        const Native = VencordNative.pluginHelpers.WallpaperFree as PluginNative<typeof import("./native")>;
-        this.CSPInfo = await Native.getCSPInfo();
-        this.Native = Native;
-    }
 });

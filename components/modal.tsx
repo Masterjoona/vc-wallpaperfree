@@ -4,12 +4,8 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import { ModalContent, ModalHeader, ModalProps, ModalRoot, ModalSize, openModal } from "@utils/modal";
-import { relaunch } from "@utils/native";
-import { PluginNative } from "@utils/types";
-import { Alerts, Button, Text, TextInput, useEffect, useState } from "@webpack/common";
-
-const Native = VencordNative.pluginHelpers.WallpaperFree as PluginNative<typeof import("../native")>;
+import { ModalContent, ModalHeader, ModalProps, ModalRoot, ModalSize } from "@utils/modal";
+import { Button, SettingsRouter, Text, TextInput, useEffect, useState } from "@webpack/common";
 
 interface Props {
     props: ModalProps;
@@ -26,10 +22,10 @@ export function SetWallpaperModal({ props, onSelect }: Props) {
             setCspError(true);
         };
 
-        window.addEventListener("securitypolicyviolation", handler);
+        document.addEventListener("securitypolicyviolation", handler);
 
         return () => {
-            window.removeEventListener("securitypolicyviolation", handler);
+            document.removeEventListener("securitypolicyviolation", handler);
         };
     }, []);
 
@@ -55,12 +51,12 @@ export function SetWallpaperModal({ props, onSelect }: Props) {
                         <>
 
                             <Text style={{ color: "var(--text-danger)" }}>
-                                "Uh oh! The image URL you provided is not allowed by the Content Security Policy."
+                                Uh oh! The image URL you provided is not allowed by the Content Security Policy. You can allow it in the Vencord Theme settings!
                             </Text>
                             <Button
-                                onClick={() => openModal(props => <AddDomainModal props={props} />)}
+                                onClick={() => { props.onClose(); SettingsRouter.open("VencordThemes"); }}
                             >
-                                Add to CSP
+                                Open Theme Settings
                             </Button>
                         </>
                     )}
@@ -91,56 +87,5 @@ export function SetWallpaperModal({ props, onSelect }: Props) {
                 </div>
             </ModalContent>
         </ModalRoot >
-    );
-}
-
-
-export function AddDomainModal({ props }: { props: ModalProps; }) {
-    const [url, setUrl] = useState("");
-
-    return (
-        <ModalRoot {...props} size={ModalSize.SMALL}>
-            <ModalHeader>
-                <Text variant="heading-lg/normal" style={{ marginBottom: 8 }}>
-                    Add a domain to csp
-                </Text>
-            </ModalHeader>
-            <ModalContent>
-                <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-                    <Text>The domain to add (direct url to an image will suffice as well)</Text>
-                    <TextInput
-                        placeholder="https://example.com/"
-                        value={url}
-                        onChange={setUrl}
-                        autoFocus
-                    />
-                    <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
-                        <Button onClick={props.onClose}>Cancel</Button>
-                        <Button
-                            color={Button.Colors.BRAND}
-                            onClick={async () => {
-                                props.onClose();
-                                const result = await Native.showDialog(url);
-                                if (result.error) {
-                                    Alerts.show({
-                                        title: "Error",
-                                        body: result.error,
-                                    });
-                                    return;
-                                }
-                                Alerts.show({
-                                    title: "Success",
-                                    body: `Domain ${result.domain} was added to the list of whitelisted domains. You'll need to restart for it to take effect.`,
-                                    confirmText: "Restart",
-                                    cancelText: "Later",
-                                    onConfirm: relaunch
-                                });
-                            }}
-                            disabled={!url}
-                        >Add</Button>
-                    </div>
-                </div>
-            </ModalContent>
-        </ModalRoot>
     );
 }

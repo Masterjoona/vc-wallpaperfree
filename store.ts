@@ -57,11 +57,8 @@ export const WallpaperFreeStore = proxyLazy(() => {
     const store = new WallpaperFreeStore(FluxDispatcher, {
         // @ts-ignore
         VC_WALLPAPER_FREE_CHANGE({ guildId, channelId, url }: { guildId: string | undefined, channelId: string | undefined, url: string; }) {
-            if (guildId) {
-                wallpaperGuildMap.set(guildId, url);
-            } else if (channelId) {
-                wallpaperChannelMap.set(channelId, url);
-            }
+            guildId && wallpaperGuildMap.set(guildId, url);
+            channelId && wallpaperChannelMap.set(channelId, url);
             store.emitChange();
         },
 
