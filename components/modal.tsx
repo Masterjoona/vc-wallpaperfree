@@ -10,10 +10,11 @@ import { Button, SettingsRouter, Text, TextInput, useEffect, useState } from "@w
 interface Props {
     props: ModalProps;
     onSelect: (url: string) => void;
+    initialUrl: string | undefined;
 }
 
-export function SetWallpaperModal({ props, onSelect }: Props) {
-    const [url, setUrl] = useState("");
+export function SetWallpaperModal({ props, onSelect, initialUrl }: Props) {
+    const [url, setUrl] = useState(initialUrl ?? "");
     const [cspError, setCspError] = useState(false);
 
     useEffect(() => {

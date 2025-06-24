@@ -8,6 +8,7 @@ import { openModal } from "@utils/modal";
 import { makeCodeblock } from "@utils/text";
 import { Button, FluxDispatcher, Parser } from "@webpack/common";
 
+import { WallpaperFreeStore } from "../store";
 import { SetWallpaperModal } from "./modal";
 
 export function GlobalDefaultComponent() {
@@ -22,7 +23,7 @@ export function GlobalDefaultComponent() {
     return (
         <>
             <Button onClick={() => {
-                openModal(props => <SetWallpaperModal props={props} onSelect={setGlobal} />);
+                openModal(props => <SetWallpaperModal props={props} onSelect={setGlobal} initialUrl={WallpaperFreeStore.globalDefault} />);
             }}>Set a global wallpaper</Button>
 
             <Button
@@ -47,7 +48,26 @@ export function TipsComponent() {
         transform: scaleX(-1); /* flip it horizontally */
         filter: blur(4px); /* apply a blur */
         opacity: 0.7; /* self-explanatory */
+    }
+
+    /* If don't like embeds being transparent */
+
+    [class*=embedFull__] {
+    background: var(--background-surface-high) !important;
+    }
+
+    /* the same for codeblocks (or use ShikiCodeblocks) */
+
+    [class^=markup__] code {
+        background: var(--background-secondary) !important;
     }`;
-    return Parser.parse(makeCodeblock(tipText, "css"));
+    return (
+        <>
+            {Parser.parse(makeCodeblock(tipText, "css"))}
+            <Button onClick={() => VencordNative.quickCss.openEditor()}>
+                Open QuickCSS
+            </Button>
+        </>
+    );
 }
 

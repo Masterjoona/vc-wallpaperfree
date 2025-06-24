@@ -45,13 +45,19 @@ export const WallpaperFreeStore = proxyLazy(() => {
             return { guildMap: Array.from(wallpaperGuildMap), channelMap: Array.from(wallpaperChannelMap), globalDefault };
         }
 
-        getUrl(channel: Channel): string | undefined {
+        getUrl(channel: Channel) {
             return (
                 wallpaperChannelMap.get(channel.id) ??
                 wallpaperGuildMap.get(channel.guild_id) ??
                 globalDefault
             );
         }
+
+        getForChannel(id: string) { return wallpaperChannelMap.get(id); }
+
+        getForGuild(id: string) { return wallpaperGuildMap.get(id); }
+
+        get globalDefault() { return globalDefault; }
     }
 
     const store = new WallpaperFreeStore(FluxDispatcher, {
