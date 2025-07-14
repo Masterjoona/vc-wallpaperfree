@@ -27,7 +27,7 @@ const addWallpaperMenu = (channelId?: string, guildId?: string) => {
         guildId ? WallpaperFreeStore.getForGuild(guildId) : undefined;
 
     return (
-        <Menu.MenuItem label="Wallpaper Free" key="vc-wpfree-menu" id="vc-wpfree-menu">
+        <Menu.MenuItem label="WallpaperFree" key="vc-wpfree-menu" id="vc-wpfree-menu">
             <Menu.MenuItem
                 label="Set Wallpaper"
                 id="vc-wpfree-set-wallpaper"
@@ -38,6 +38,7 @@ const addWallpaperMenu = (channelId?: string, guildId?: string) => {
                 label="Remove Wallpaper"
                 id="vc-wpfree-remove-wallpaper"
                 color="danger"
+                disabled={!initialUrl}
                 action={() => setWallpaper(void 0)}
             />
         </Menu.MenuItem>

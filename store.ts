@@ -5,23 +5,20 @@
  */
 
 import { proxyLazy } from "@utils/lazy";
-import { findByPropsLazy } from "@webpack";
-import { FluxDispatcher } from "@webpack/common";
-import { FluxEmitter, FluxStore } from "@webpack/types";
-import { Channel } from "discord-types/general";
+import { Channel, FluxEmitter, FluxStore } from "@vencord/discord-types";
+import { Flux as FluxWP, FluxDispatcher } from "@webpack/common";
 
 interface IFlux {
     PersistedStore: typeof FluxStore;
     Emitter: FluxEmitter;
 }
-const Flux: IFlux = findByPropsLazy("connectStores");
 
 export const WallpaperFreeStore = proxyLazy(() => {
     const wallpaperChannelMap: Map<string, string> = new Map();
     const wallpaperGuildMap: Map<string, string> = new Map();
     let globalDefault: string | undefined;
 
-    class WallpaperFreeStore extends Flux.PersistedStore {
+    class WallpaperFreeStore extends (FluxWP as unknown as IFlux).PersistedStore {
         static persistKey = "WallpaperFreeStore";
 
         // @ts-ignore

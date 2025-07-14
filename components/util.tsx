@@ -6,7 +6,7 @@
 
 import { openModal } from "@utils/modal";
 import { makeCodeblock } from "@utils/text";
-import { Button, FluxDispatcher, Parser } from "@webpack/common";
+import { Button, FluxDispatcher, Parser, Text } from "@webpack/common";
 
 import { WallpaperFreeStore } from "../store";
 import { SetWallpaperModal } from "./modal";
@@ -50,24 +50,34 @@ export function TipsComponent() {
         opacity: 0.7; /* self-explanatory */
     }
 
-    /* If don't like embeds being transparent */
+    /* If you don't like embeds being transparent */
 
     [class*=embedFull__] {
-    background: var(--background-surface-high) !important;
+        background: var(--background-surface-high) !important;
     }
 
     /* the same for codeblocks (or use ShikiCodeblocks) */
 
-    [class^=markup__] code {
-        background: var(--background-secondary) !important;
+    .hljs {
+        background-color: var(--background-base-lowest) !important;
     }`;
     return (
-        <>
+        <div style={{ userSelect: "text" }}>
+            {!IS_WEB && (
+                <>
+                    <Text>
+                        you can use local files by having them in the vencord theme directory, and using the url <code>vencord:///themes/filename.ext</code>
+                    </Text>
+                    <Button onClick={() => VencordNative.themes.openFolder()}>
+                        Open Theme Directory
+                    </Button>
+                </>
+            )}
             {Parser.parse(makeCodeblock(tipText, "css"))}
             <Button onClick={() => VencordNative.quickCss.openEditor()}>
                 Open QuickCSS
             </Button>
-        </>
+        </div>
     );
 }
 
