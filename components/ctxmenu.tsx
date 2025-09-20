@@ -6,25 +6,28 @@
 
 import { NavContextMenuPatchCallback } from "@api/ContextMenu";
 import { openModal } from "@utils/modal";
-import { ChannelStore, FluxDispatcher, Menu } from "@webpack/common";
+import { ChannelStore, Menu } from "@webpack/common";
 
-import { WallpaperFreeStore } from "../store";
+import { settings } from "..";
 import { SetWallpaperModal } from "./modal";
 
 
 const addWallpaperMenu = (channelId?: string, guildId?: string) => {
     const setWallpaper = (url?: string) => {
-        FluxDispatcher.dispatch({
-            // @ts-ignore
-            type: "VC_WALLPAPER_FREE_CHANGE",
-            channelId,
-            guildId,
-            url,
-        });
+        if (channelId) {
+            settings.store.channelRecord = {
+                ...settings.store.channelRecord,
+                [channelId]: url ?? ""
+            };
+        } else if (guildId) {
+            settings.store.guildRecord = {
+                ...settings.store.guildRecord,
+                [guildId]: url ?? ""
+            };
+        }
     };
 
-    const initialUrl = channelId ? WallpaperFreeStore.getForChannel(channelId) :
-        guildId ? WallpaperFreeStore.getForGuild(guildId) : undefined;
+    const initialUrl = settings.store.channelRecord[channelId ?? ""] || settings.store.guildRecord[guildId ?? ""];
 
     return (
         <Menu.MenuItem label="WallpaperFree" key="vc-wpfree-menu" id="vc-wpfree-menu">

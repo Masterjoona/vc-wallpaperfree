@@ -6,24 +6,18 @@
 
 import { openModal } from "@utils/modal";
 import { makeCodeblock } from "@utils/text";
-import { Button, FluxDispatcher, Parser, Text } from "@webpack/common";
+import { Button, Parser, Text } from "@webpack/common";
 
-import { WallpaperFreeStore } from "../store";
+import { settings } from "..";
 import { SetWallpaperModal } from "./modal";
 
 export function GlobalDefaultComponent() {
-    const setGlobal = (url?: string) => {
-        FluxDispatcher.dispatch({
-            // @ts-ignore
-            type: "VC_WALLPAPER_FREE_CHANGE_GLOBAL",
-            url,
-        });
-    };
+    const setGlobal = (url?: string) => settings.store.globalDefaultURL = url ?? "";
 
     return (
         <>
             <Button onClick={() => {
-                openModal(props => <SetWallpaperModal props={props} onSelect={setGlobal} initialUrl={WallpaperFreeStore.globalDefault} />);
+                openModal(props => <SetWallpaperModal props={props} onSelect={setGlobal} initialUrl={settings.store.globalDefaultURL} />);
             }}>Set a global wallpaper</Button>
 
             <Button
@@ -34,8 +28,9 @@ export function GlobalDefaultComponent() {
             <Button
                 color={Button.Colors.RED}
                 onClick={() => {
-                    // @ts-ignore
-                    FluxDispatcher.dispatch({ type: "VC_WALLPAPER_FREE_RESET" });
+                    settings.store.channelRecord = {};
+                    settings.store.guildRecord = {};
+                    settings.store.globalDefaultURL = "";
                 }}
             >Reset wallpaper data</Button>
         </>

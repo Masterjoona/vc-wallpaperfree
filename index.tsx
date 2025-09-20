@@ -10,11 +10,10 @@ import { definePluginSettings } from "@api/Settings";
 import { Devs } from "@utils/constants";
 import definePlugin, { OptionType } from "@utils/types";
 import { Channel } from "@vencord/discord-types";
-import { useStateFromStores } from "@webpack/common";
 
 import { ChannelContextPatch, GuildContextPatch, UserContextPatch } from "./components/ctxmenu";
 import { GlobalDefaultComponent, TipsComponent } from "./components/util";
-import { WallpaperFreeStore } from "./store";
+import { migrateFromStore } from "./store";
 
 
 export const settings = definePluginSettings({
@@ -28,6 +27,22 @@ export const settings = definePluginSettings({
         type: OptionType.COMPONENT,
         component: TipsComponent,
     },
+    channelRecord: {
+        description: "",
+        type: OptionType.CUSTOM,
+        default: {} as Record<string, string>,
+    },
+    guildRecord: {
+        description: "",
+        type: OptionType.CUSTOM,
+        default: {} as Record<string, string>,
+    },
+    globalDefaultURL: {
+        description: "",
+        type: OptionType.STRING,
+        default: "",
+        hidden: true,
+    }
 });
 
 export default definePlugin({
@@ -58,7 +73,7 @@ export default definePlugin({
         "gdm-context": ChannelContextPatch,
         "guild-context": GuildContextPatch,
     },
-    Wallpaper({ url }: { url: string; }) {
+    Wallpaper({ url }: { url: string | undefined; }) {
         // no we cant place the hook here
         if (!url) return null;
 
@@ -69,6 +84,26 @@ export default definePlugin({
             }}></div>;
     },
     WallpaperState(channel: Channel) {
-        return useStateFromStores([WallpaperFreeStore], () => WallpaperFreeStore.getUrl(channel));
+        const { channelRecord, guildRecord, globalDefaultURL } = settings.use(["channelRecord", "guildRecord", "globalDefaultURL"]);
+
+        const url = channelRecord[channel.id]
+            || (channel.guild_id ? guildRecord[channel.guild_id] : undefined)
+            || globalDefaultURL
+            || undefined;
+
+        return url;
     },
+    start() {
+        if (Object.keys(settings.store.channelRecord).length > 0
+            || Object.keys(settings.store.guildRecord).length > 0
+            || settings.store.globalDefaultURL) return;
+
+        const oldData = migrateFromStore();
+        if (!oldData) return;
+
+        const { channelRecord, guildRecord, globalDefaultURL } = oldData;
+        settings.store.channelRecord = channelRecord;
+        settings.store.guildRecord = guildRecord;
+        settings.store.globalDefaultURL = globalDefaultURL;
+    }
 });

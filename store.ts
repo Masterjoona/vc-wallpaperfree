@@ -4,10 +4,12 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import { proxyLazy } from "@utils/lazy";
-import { Channel, FluxEmitter, FluxStore } from "@vencord/discord-types";
-import { Flux as FluxWP, FluxDispatcher } from "@webpack/common";
+// import { proxyLazy } from "@utils/lazy";
+// import { Channel, FluxEmitter, FluxStore } from "@vencord/discord-types";
+// import { Flux as FluxWP, FluxDispatcher } from "@webpack/common";
+import { localStorage } from "@utils/localStorage";
 
+/*
 interface IFlux {
     PersistedStore: typeof FluxStore;
     Emitter: FluxEmitter;
@@ -80,3 +82,17 @@ export const WallpaperFreeStore = proxyLazy(() => {
 
     return store;
 });
+*/
+
+export function migrateFromStore() {
+    const storeData = JSON.parse(localStorage.WallpaperFreeStore ?? "{}");
+    if (Object.keys(storeData).length === 0) return;
+
+    const data = storeData._state;
+
+    return {
+        channelRecord: data.channelMap ? Object.fromEntries(data.channelMap) as Record<string, string> : {},
+        guildRecord: data.guildMap ? Object.fromEntries(data.guildMap) as Record<string, string> : {},
+        globalDefaultURL: data.globalDefault ?? ""
+    };
+}
