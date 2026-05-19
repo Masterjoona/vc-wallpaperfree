@@ -8,13 +8,18 @@ import "./styles.css";
 
 import { definePluginSettings } from "@api/Settings";
 import { Devs } from "@utils/constants";
-import definePlugin, { OptionType } from "@utils/types";
+import { classNameFactory } from "@utils/css";
+import definePlugin, { OptionType, PluginNative } from "@utils/types";
 import { Channel } from "@vencord/discord-types";
 
 import { ChannelContextPatch, GuildContextPatch, UserContextPatch } from "./components/ctxmenu";
 import { Buttons } from "./components/util";
 import { migrateFromStore } from "./store";
 
+// @ts-ignore
+export const Native = VencordNative.pluginHelpers.WallpaperFree as PluginNative<typeof import("./native")>;
+
+export const cl = classNameFactory("vc-wpfree-");
 
 export const settings = definePluginSettings({
     buttons: {
@@ -58,6 +63,7 @@ export default definePlugin({
     name: "WallpaperFree",
     authors: [Devs.Joona],
     description: "Recreation of the old DM wallpaper experiment; Set a background image for any channel, user or server.",
+    requiresRestart: !IS_WEB,
     patches: [
         {
             find: ".handleSendMessage,onResize",
@@ -87,12 +93,16 @@ export default definePlugin({
         // no we cant place the hook here
         if (!url) return null;
 
-        return <div className="vc-wpfree-wp-container" data-wallpaper-source={source} style={{ backgroundImage: `url(${url})` }}></div>;
+        return <div className={cl("wp-container")} data-wallpaper-source={source} style={{ backgroundImage: `url(${url})` }}></div>;
     },
 
     WallpaperState,
 
     start() {
+        if (!IS_WEB) {
+            Native.ensureLocalWallpapersDirectory().catch(console.error);
+        }
+
         if (Object.keys(settings.store.channelRecord).length > 0
             || Object.keys(settings.store.guildRecord).length > 0
             || settings.store.globalDefaultURL) return;

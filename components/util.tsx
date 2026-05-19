@@ -10,6 +10,7 @@ import { RenderModalProps } from "@vencord/discord-types";
 import { GuildStore, Modal, openModal, Parser } from "@webpack/common";
 
 import { settings } from "..";
+import { ViewLocalWallpapers } from "./local";
 import { SetWallpaperModal } from "./modal";
 
 function GlobalDefaultComponent() {
@@ -34,6 +35,12 @@ function GlobalDefaultComponent() {
                     settings.store.globalDefaultURL = "";
                 }}
             >Reset wallpaper data</Button>
+
+            {!IS_WEB &&
+                <Button
+                    onClick={() => openModal(props => <ViewLocalWallpapers props={props}/>)}
+                >View local Wallpapers</Button>
+            }
         </>
     );
 }
@@ -107,7 +114,10 @@ function TipsComponent() {
             {!IS_WEB && (
                 <>
                     <Paragraph>
-                        you can use local files by having them in the vencord theme directory, and using the url <code>vencord:///themes/filename.ext</code>
+                        You can use local files by having them in the vencord theme directory, and using the url <code>vencord:///themes/filename.ext</code>.
+                    </Paragraph>
+                    <Paragraph>
+                        By default, WallpaperFree uses the <code>WallpaperFree/</code> subdirectory in the vencord theme directory for the automatic downloads.
                     </Paragraph>
                     <Button onClick={() => VencordNative.themes.openFolder()}>
                         Open Theme Directory
