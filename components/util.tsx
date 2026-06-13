@@ -4,11 +4,10 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import { BaseText, Button, Paragraph } from "@components/index";
-
-import { ModalContent, ModalHeader, ModalProps, ModalRoot, ModalSize, openModal } from "@utils/modal";
+import { Button, Paragraph } from "@components/index";
 import { makeCodeblock } from "@utils/text";
-import { GuildStore, Parser } from "@webpack/common";
+import { RenderModalProps } from "@vencord/discord-types";
+import { GuildStore, Modal, openModal, Parser } from "@webpack/common";
 
 import { settings } from "..";
 import { SetWallpaperModal } from "./modal";
@@ -39,40 +38,38 @@ function GlobalDefaultComponent() {
     );
 }
 
-function ViewAllWallpapers({ props }: { props: ModalProps; }) {
+function ViewAllWallpapers({ props }: { props: RenderModalProps }) {
     const { channelRecord, guildRecord } = settings.use(["channelRecord", "guildRecord"]);
 
     return (
-        <ModalRoot size={ModalSize.MEDIUM} {...props}>
-            <ModalHeader>
-                <BaseText size="lg" weight="semibold" style={{ flexGrow: 1 }}>All Wallpapers</BaseText>
-            </ModalHeader>
-
-            <ModalContent>
-                {[
-                    ...Object.entries(channelRecord)
-                        .filter(([, url]) => !!url)
-                        .map(([id, url]) => ({ key: `c-${id}`, line: `<#${id}>: ${url}`, url })),
-                    ...Object.entries(guildRecord)
-                        .filter(([, url]) => !!url)
-                        .map(([id, url]) => ({ key: `g-${id}`, line: `${GuildStore.getGuild(id)?.name ?? id}: ${url}`, url }))
-                ].map(({ key, line, url }) => (
-                    <div key={key} style={{ marginBottom: 10 }}>
-                        <Paragraph>{Parser.parse(line)}</Paragraph>
-                        <img
-                            src={url}
-                            style={{
-                                display: "block",
-                                width: "100%",
-                                height: "auto",
-                                objectFit: "cover",
-                                borderRadius: 8
-                            }}
-                        />
-                    </div>
-                ))}
-            </ModalContent>
-        </ModalRoot>
+        <Modal
+            {...props}
+            title="All Wallpapers"
+            size="lg"
+        >
+            {[
+                ...Object.entries(channelRecord)
+                    .filter(([, url]) => !!url)
+                    .map(([id, url]) => ({ key: `c-${id}`, line: `<#${id}>: ${url}`, url })),
+                ...Object.entries(guildRecord)
+                    .filter(([, url]) => !!url)
+                    .map(([id, url]) => ({ key: `g-${id}`, line: `${GuildStore.getGuild(id)?.name ?? id}: ${url}`, url }))
+            ].map(({ key, line, url }) => (
+                <div key={key} style={{ marginBottom: 10 }}>
+                    <Paragraph>{Parser.parse(line)}</Paragraph>
+                    <img
+                        src={url}
+                        style={{
+                            display: "block",
+                            width: "100%",
+                            height: "auto",
+                            objectFit: "cover",
+                            borderRadius: 8
+                        }}
+                    />
+                </div>
+            ))}
+        </Modal>
     );
 }
 
