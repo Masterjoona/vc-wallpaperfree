@@ -55,7 +55,7 @@ export function SetWallpaperModal({ props, onSelect, initialUrl }: Props) {
                 {cspError && (
                     <>
 
-                        <Paragraph style={{ color: "var(--text-danger)" }}>
+                        <Paragraph style={{ color: "var(--text-feedback-critical, var(--text-default))" }}>
                             Uh oh! The image URL you provided is not allowed by the Content Security Policy. You can allow it in the Vencord Theme settings!
                         </Paragraph>
                         <Button
