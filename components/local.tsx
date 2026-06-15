@@ -63,7 +63,7 @@ export function ViewLocalWallpapers({ props, onSelect }: Props) {
                 },
             ]}
         >
-            {localWallpapers && localWallpapers.length
+            {localWallpapers?.length
             ? <div className={cl("grid")}>
                 {localWallpapers.map(wallpaper => (
                     <div
