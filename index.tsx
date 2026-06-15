@@ -16,7 +16,6 @@ import { ChannelContextPatch, GuildContextPatch, UserContextPatch } from "./comp
 import { Buttons } from "./components/util";
 import { migrateFromStore } from "./store";
 
-// @ts-ignore
 export const Native = VencordNative.pluginHelpers.WallpaperFree as PluginNative<typeof import("./native")>;
 
 export const cl = classNameFactory("vc-wpfree-");
