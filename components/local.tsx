@@ -30,13 +30,9 @@ interface Props {
 }
 
 export function ViewLocalWallpapers({ props, onSelect }: Props) {
-    const [localWallpapers, setLocalWallpapers] = useAwaiter(async () => {
-        try {
-            return await Native.listLocalWallpapers();
-        } catch (error) {
-            showToast(String(error), Toasts.Type.FAILURE, { duration: 10_000 });
-        }
-        return null;
+    const [localWallpapers] = useAwaiter(Native.listLocalWallpapers, {
+        onError: e => showToast(String(e), Toasts.Type.FAILURE, { duration: 10_000 }),
+        fallbackValue: undefined,
     });
 
     const formatUrl = (filename: string) => `vencord:///themes/WallpaperFree/${filename}`;
@@ -107,7 +103,8 @@ export function ViewLocalWallpapers({ props, onSelect }: Props) {
                             onClick={() => {
                                 Native
                                     .deleteWallpaper(wallpaper)
-                                    .then(() => setLocalWallpapers(localWallpapers.filter(el => el !== wallpaper)))
+                                    // TODO: ask
+                                    // .then(() => setLocalWallpapers(localWallpapers.filter(el => el !== wallpaper)))
                                     .catch(error => showToast(String(error), Toasts.Type.FAILURE, { duration: 10_000 }));
                             }}
                             Icon={DeleteIcon}
