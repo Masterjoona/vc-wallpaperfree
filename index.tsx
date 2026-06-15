@@ -98,10 +98,6 @@ export default definePlugin({
     WallpaperState,
 
     start() {
-        if (!IS_WEB) {
-            Native.ensureLocalWallpapersDirectory().catch(console.error);
-        }
-
         if (Object.keys(settings.store.channelRecord).length > 0
             || Object.keys(settings.store.guildRecord).length > 0
             || settings.store.globalDefaultURL) return;

@@ -42,14 +42,6 @@ function mapError(message: string, error: any) {
     return `${message}: ${error instanceof Error ? error.message : String(error)}`;
 }
 
-export async function ensureLocalWallpapersDirectory(_): Promise<void> {
-    return new Promise((resolve, reject) => {
-        fs.mkdir(WALLPAPERS_DIR, { recursive: true })
-            .then(() => resolve())
-            .catch(error => reject(mapError("Creating wallpaper directory failed", error)));
-    });
-}
-
 export async function openLocalWallpapersDirectory(_): Promise<void> {
     return new Promise((resolve, reject) => {
         shell
