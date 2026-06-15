@@ -38,61 +38,55 @@ function getFilenameFromResponse(url: string, response: Response): string {
     return `${randomUUID()}.bin`;
 }
 
-function mapError(message: string, error: any) {
-    return `${message}: ${error instanceof Error ? error.message : String(error)}`;
+function mapError(message: string, error: any): Error {
+    return new Error(`${message}: ${error instanceof Error ? error.message : String(error)}`);
 }
 
 export async function openLocalWallpapersDirectory(_): Promise<void> {
-    return new Promise((resolve, reject) => {
-        shell
-            .openPath(WALLPAPERS_DIR)
-            .then(failure => failure ? reject(failure) : resolve())
-            .catch(error => reject(mapError("Opening WallpaperFree directory failed", error)));
-    });
+    try {
+        await shell.openPath(WALLPAPERS_DIR);
+    } catch (error) {
+        throw mapError("Opening WallpaperFree directory failed", error);
+    }
 }
 
 export async function downloadWallpaper(_, url: string): Promise<string> {
-    return new Promise((resolve, reject) => {
-        (async () => {
-            if (url.startsWith("vencord:///"))
-                return url;
+    try {
+        if (url.startsWith("vencord:///"))
+            return url;
 
-            if (!url.startsWith("http"))
-                throw new Error("Invalid URL");
+        if (!url.startsWith("http"))
+            throw new Error("Invalid URL");
 
-            const response = await fetch(url);
-            if (!response.ok)
-                throw new Error(`${response.status} HTTP error: ${response.statusText}`);
+        const response = await fetch(url);
+        if (!response.ok)
+            throw new Error(`${response.status} HTTP error: ${response.statusText}`);
 
-            const buffer = Buffer.from(await response.arrayBuffer());
-            const filename = getFilenameFromResponse(url, response);
+        const buffer = Buffer.from(await response.arrayBuffer());
+        const filename = getFilenameFromResponse(url, response);
 
-            await fs.mkdir(WALLPAPERS_DIR, { recursive: true });
-            await fs.writeFile(path.join(WALLPAPERS_DIR, filename), buffer);
+        await fs.mkdir(WALLPAPERS_DIR, { recursive: true });
+        await fs.writeFile(path.join(WALLPAPERS_DIR, filename), buffer);
 
-            return `vencord:///themes/WallpaperFree/${filename}`;
-        })()
-            .then(value => resolve(value))
-            .catch(error => reject(mapError("Wallpaper download failed", error)));
-    });
+        return `vencord:///themes/WallpaperFree/${filename}`;
+    } catch (error) {
+        throw mapError("Wallpaper download failed", error);
+    }
 }
 
 export async function deleteWallpaper(_, filename: string): Promise<void> {
-    return new Promise((resolve, reject) => {
-        fs
-            .rm(path.join(WALLPAPERS_DIR, filename))
-            .then(value => resolve(value))
-            .catch(error => reject(mapError("Wallpaper deletion failed", error)));
-    });
+    try {
+        await fs.rm(path.join(WALLPAPERS_DIR, filename));
+    } catch (error) {
+        throw mapError("Wallpaper deletion failed", error);
+    }
 }
 
 export async function listLocalWallpapers(_): Promise<string[]> {
-    return new Promise((resolve, reject) => {
-        (async () => {
-            await fs.mkdir(WALLPAPERS_DIR, { recursive: true });
-            return await fs.readdir(WALLPAPERS_DIR);
-        })()
-            .then(value => resolve(value))
-            .catch(error => reject(mapError("Listing wallpapers error", error)));
-    });
+    try {
+        await fs.mkdir(WALLPAPERS_DIR, { recursive: true });
+        return await fs.readdir(WALLPAPERS_DIR);
+    } catch (error) {
+        throw mapError("Listing wallpapers error", error);
+    }
 }
