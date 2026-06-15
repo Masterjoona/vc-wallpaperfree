@@ -9,7 +9,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 
 import { THEMES_DIR } from "@main/utils/constants";
-import { shell } from "electron";
+import { BrowserWindow, dialog, FileFilter, SaveDialogOptions, shell } from "electron";
 
 const WALLPAPERS_DIR = path.join(THEMES_DIR, "WallpaperFree");
 
@@ -38,6 +38,45 @@ function getFilenameFromResponse(url: string, response: Response): string {
     return `${randomUUID()}.bin`;
 }
 
+function getExtensionFromString(filename: string): string | null {
+    const i = filename.lastIndexOf(".");
+
+    return i > 0 ? filename.substring(i + 1) : null;
+}
+
+async function saveWallpaperDialog(defaultName: string): Promise<string> {
+    try {
+        const window = BrowserWindow.getFocusedWindow();
+        const extension = getExtensionFromString(defaultName);
+
+        const filters: FileFilter[] = [{ name: "All", extensions: ["*"] }];
+
+        if (extension) {
+            filters.unshift({ name: extension, extensions: [extension] });
+        }
+
+        const options: SaveDialogOptions = {
+            title: "Save Wallpaper",
+            defaultPath: path.join(WALLPAPERS_DIR, defaultName),
+            buttonLabel: "Save Wallpaper",
+            filters,
+        };
+
+        const response = await (window
+            ? dialog.showSaveDialog(window, options)
+            : dialog.showSaveDialog(options)
+        );
+
+        if (response.canceled || !response.filePath) {
+            throw new Error("Save canceled by user");
+        }
+
+        return response.filePath;
+    } catch (error) {
+        throw mapError("Saving file dialog failed", error);
+    }
+}
+
 function mapError(message: string, error: any): Error {
     return new Error(`${message}: ${error instanceof Error ? error.message : String(error)}`);
 }
@@ -63,12 +102,12 @@ export async function downloadWallpaper(_, url: string): Promise<string> {
             throw new Error(`${response.status} HTTP error: ${response.statusText}`);
 
         const buffer = Buffer.from(await response.arrayBuffer());
-        const filename = getFilenameFromResponse(url, response);
+        const filePath = await saveWallpaperDialog(getFilenameFromResponse(url, response));
 
         await fs.mkdir(WALLPAPERS_DIR, { recursive: true });
-        await fs.writeFile(path.join(WALLPAPERS_DIR, filename), buffer);
+        await fs.writeFile(filePath, buffer);
 
-        return `vencord:///themes/WallpaperFree/${filename}`;
+        return `vencord:///themes/WallpaperFree/${(path.basename(filePath))}`;
     } catch (error) {
         throw mapError("Wallpaper download failed", error);
     }
