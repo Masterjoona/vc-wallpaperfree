@@ -8,9 +8,10 @@ import { Button, ButtonProps } from "@components/Button";
 import { Flex } from "@components/Flex";
 import { DeleteIcon } from "@components/Icons";
 import { Paragraph } from "@components/Paragraph";
+import { useAwaiter } from "@utils/react";
 import { IconComponent } from "@utils/types";
 import { RenderModalProps } from "@vencord/discord-types";
-import { Modal, showToast, Toasts, useEffect, useState } from "@webpack/common";
+import { Modal, showToast, Toasts } from "@webpack/common";
 
 import { cl, Native } from "..";
 
@@ -29,14 +30,14 @@ interface Props {
 }
 
 export function ViewLocalWallpapers({ props, onSelect }: Props) {
-    const [localWallpapers, setLocalWallpapers] = useState<string[] | null>(null);
-
-    useEffect(() => {
-        Native
-            .listLocalWallpapers()
-            .then(setLocalWallpapers)
-            .catch(error => showToast(String(error), Toasts.Type.FAILURE, { duration: 10_000 }));
-    }, []);
+    const [localWallpapers, setLocalWallpapers] = useAwaiter(async () => {
+        try {
+            return await Native.listLocalWallpapers();
+        } catch (error) {
+            showToast(String(error), Toasts.Type.FAILURE, { duration: 10_000 });
+        }
+        return null;
+    });
 
     const formatUrl = (filename: string) => `vencord:///themes/WallpaperFree/${filename}`;
 
