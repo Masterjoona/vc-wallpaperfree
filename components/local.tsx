@@ -4,25 +4,13 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import { Button, ButtonProps } from "@components/Button";
 import { Flex } from "@components/Flex";
-import { DeleteIcon } from "@components/Icons";
 import { Paragraph } from "@components/Paragraph";
 import { useAwaiter } from "@utils/react";
-import { IconComponent } from "@utils/types";
 import { RenderModalProps } from "@vencord/discord-types";
 import { Modal, showToast, Toasts } from "@webpack/common";
 
 import { cl, Native } from "..";
-
-function ButtonWithIcon({ children, Icon, ...buttonProps }: ButtonProps & { Icon: IconComponent; }) {
-    return (
-        <Button {...buttonProps} >
-            <Icon />
-            {children}
-        </Button>
-    );
-}
 
 interface Props {
     props: RenderModalProps;
@@ -34,8 +22,6 @@ export function ViewLocalWallpapers({ props, onSelect }: Props) {
         onError: e => showToast(String(e), Toasts.Type.FAILURE, { duration: 10_000 }),
         fallbackValue: undefined,
     });
-
-    const formatUrl = (filename: string) => `vencord:///themes/WallpaperFree/${filename}`;
 
     return (
         <Modal
@@ -73,7 +59,7 @@ export function ViewLocalWallpapers({ props, onSelect }: Props) {
                         }}
                     >
                         <img
-                            src={formatUrl(wallpaper)}
+                            src={wallpaper}
                             style={{
                                 display: "block",
                                 width: "100%",
@@ -85,29 +71,9 @@ export function ViewLocalWallpapers({ props, onSelect }: Props) {
                             onClick={() => {
                                 if (!onSelect) return;
 
-                                onSelect(formatUrl(wallpaper));
+                                onSelect(wallpaper);
                                 props.onClose();
                             }}
-                        />
-                        <ButtonWithIcon
-                            className={cl("remove-button")}
-                            variant="dangerPrimary"
-                            style={{
-                                position: "absolute",
-                                top: 5,
-                                right: 5,
-                                minWidth: "unset",
-                                minHeight: "unset",
-                                padding: "7px 9.5px",
-                            }}
-                            onClick={() => {
-                                Native
-                                    .deleteWallpaper(wallpaper)
-                                    // TODO: ask
-                                    // .then(() => setLocalWallpapers(localWallpapers.filter(el => el !== wallpaper)))
-                                    .catch(error => showToast(String(error), Toasts.Type.FAILURE, { duration: 10_000 }));
-                            }}
-                            Icon={DeleteIcon}
                         />
                     </div>
                 ))}

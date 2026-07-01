@@ -14,18 +14,10 @@
     margin-bottom: 20px;
 }
 
-.vc-wpfree-remove-button {
-    display: none;
-}
-
 .vc-wpfree-localwp-container {
     transition: 0.25s;
 
     &:hover {
         transform: scale(1.02);
-
-        .vc-wpfree-remove-button {
-            display: block;
-        }
     }
 }

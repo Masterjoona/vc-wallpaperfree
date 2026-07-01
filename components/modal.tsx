@@ -7,9 +7,8 @@
 import { Button, Paragraph } from "@components/index";
 import { RenderModalProps } from "@vencord/discord-types";
 import { findByPropsLazy } from "@webpack";
-import { ConfirmModal, openModal, showToast, TextInput, Toasts, useEffect, useState } from "@webpack/common";
+import { ConfirmModal, openModal, TextInput, useEffect, useState } from "@webpack/common";
 
-import { Native } from "..";
 import { ViewLocalWallpapers } from "./local";
 
 const UserSettingsModal = findByPropsLazy("openUserSettings");
@@ -44,21 +43,6 @@ export function SetWallpaperModal({ props, onSelect, initialUrl }: Props) {
             confirmText="Apply"
             variant="primary"
             onConfirm={() => onSelect(url)}
-            actionBarInput={!IS_WEB &&
-                <Button
-                    onClick={() => {
-                        Native
-                            .downloadWallpaper(url)
-                            .then(url => {
-                                onSelect(url);
-                                props.onClose();
-                            })
-                            .catch(error => showToast(String(error), Toasts.Type.FAILURE, { duration: 10_000 }));
-                    }}
-                    disabled={!url}
-                    variant="positive"
-                >Download & Apply</Button>
-            }
         >
             <div style={{ display: "flex", flexDirection: "column", gap: 16, marginBottom: 16 }}>
                 <Paragraph>The image url</Paragraph>
@@ -74,7 +58,7 @@ export function SetWallpaperModal({ props, onSelect, initialUrl }: Props) {
                     <>
 
                         <Paragraph style={{ color: "var(--text-feedback-critical, var(--text-default))" }}>
-                            Uh oh! The image URL you provided is not allowed by the Content Security Policy. You can allow it in the Vencord Theme settings{!IS_WEB && <> or use the download button</>}!
+                            Uh oh! The image URL you provided is not allowed by the Content Security Policy. You can allow it in the Vencord Theme settings!
                         </Paragraph>
                         <Button
                             onClick={() => { props.onClose(); UserSettingsModal.openUserSettings("vencord_themes_panel"); }}
