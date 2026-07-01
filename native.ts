@@ -27,8 +27,7 @@ export async function openLocalWallpapersDirectory(_): Promise<void> {
 export async function listLocalWallpapers(_): Promise<string[]> {
     try {
         await fs.mkdir(WALLPAPERS_DIR, { recursive: true });
-        const files = await fs.readdir(WALLPAPERS_DIR);
-        return files.map(filename => `vencord:///themes/WallpaperFree/${filename}`);
+        return await fs.readdir(WALLPAPERS_DIR);
     } catch (error) {
         throw mapError("Listing wallpapers error", error);
     }

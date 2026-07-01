@@ -19,8 +19,9 @@ interface Props {
 
 export function ViewLocalWallpapers({ props, onSelect }: Props) {
     const [localWallpapers] = useAwaiter(Native.listLocalWallpapers, {
+        onSuccess: r => r.map(filename => `vencord:///themes/WallpaperFree/${filename}`),
         onError: e => showToast(String(e), Toasts.Type.FAILURE, { duration: 10_000 }),
-        fallbackValue: undefined,
+        fallbackValue: [],
     });
 
     return (
@@ -45,7 +46,7 @@ export function ViewLocalWallpapers({ props, onSelect }: Props) {
                 },
             ]}
         >
-            {localWallpapers?.length
+            {localWallpapers.length
             ? <div className={cl("grid")}>
                 {localWallpapers.map(wallpaper => (
                     <div
