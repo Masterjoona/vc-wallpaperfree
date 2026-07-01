@@ -117,7 +117,7 @@ function TipsComponent() {
                         You can use local files by having them in the vencord theme directory, and using the url <code>vencord:///themes/filename.ext</code>.
                     </Paragraph>
                     <Paragraph>
-                        By default, WallpaperFree uses the <code>WallpaperFree/</code> subdirectory in the vencord theme directory for the automatic downloads.
+                        In order to use the local previewer, save your local files in the <code>WallpaperFree/</code> subdirectory in the vencord theme directory.
                     </Paragraph>
                     <Button onClick={() => VencordNative.themes.openFolder()}>
                         Open Theme Directory
