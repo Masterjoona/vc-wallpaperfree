@@ -9,14 +9,12 @@ import "./styles.css";
 import { definePluginSettings } from "@api/Settings";
 import { Devs } from "@utils/constants";
 import { classNameFactory } from "@utils/css";
-import definePlugin, { OptionType, PluginNative } from "@utils/types";
+import definePlugin, { OptionType } from "@utils/types";
 import { Channel } from "@vencord/discord-types";
 
 import { ChannelContextPatch, GuildContextPatch, UserContextPatch } from "./components/ctxmenu";
 import { Buttons } from "./components/util";
 import { migrateFromStore } from "./store";
-
-export const Native = VencordNative.pluginHelpers.WallpaperFree as PluginNative<typeof import("./native")>;
 
 export const cl = classNameFactory("vc-wpfree-");
 
@@ -92,7 +90,12 @@ export default definePlugin({
         // no we cant place the hook here
         if (!url) return null;
 
-        return <div className={cl("wp-container")} data-wallpaper-source={source} style={{ backgroundImage: `url(${url})` }}></div>;
+        return <div
+            className={cl("wp-container")}
+            data-wallpaper-source={source}
+            data-wallpaper-url={url}
+            style={{ backgroundImage: `url(${url})` }}>
+        </div>;
     },
 
     WallpaperState,
