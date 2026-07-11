@@ -5,8 +5,7 @@
  */
 
 import { NavContextMenuPatchCallback } from "@api/ContextMenu";
-import { openModal } from "@utils/modal";
-import { ChannelStore, Menu } from "@webpack/common";
+import { ChannelStore, Menu, openModal } from "@webpack/common";
 
 import { settings } from "..";
 import { SetWallpaperModal } from "./modal";

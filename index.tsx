@@ -8,6 +8,7 @@ import "./styles.css";
 
 import { definePluginSettings } from "@api/Settings";
 import { Devs } from "@utils/constants";
+import { classNameFactory } from "@utils/css";
 import definePlugin, { OptionType } from "@utils/types";
 import { Channel } from "@vencord/discord-types";
 
@@ -15,6 +16,7 @@ import { ChannelContextPatch, GuildContextPatch, UserContextPatch } from "./comp
 import { Buttons } from "./components/util";
 import { migrateFromStore } from "./store";
 
+export const cl = classNameFactory("vc-wpfree-");
 
 export const settings = definePluginSettings({
     buttons: {
@@ -58,6 +60,7 @@ export default definePlugin({
     name: "WallpaperFree",
     authors: [Devs.Joona],
     description: "Recreation of the old DM wallpaper experiment; Set a background image for any channel, user or server.",
+    requiresRestart: !IS_WEB,
     patches: [
         {
             find: ".handleSendMessage,onResize",
@@ -87,7 +90,12 @@ export default definePlugin({
         // no we cant place the hook here
         if (!url) return null;
 
-        return <div className="vc-wpfree-wp-container" data-wallpaper-source={source} style={{ backgroundImage: `url(${url})` }}></div>;
+        return <div
+            className={cl("wp-container")}
+            data-wallpaper-source={source}
+            data-wallpaper-url={url}
+            style={{ backgroundImage: `url(${url})` }}>
+        </div>;
     },
 
     WallpaperState,

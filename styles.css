@@ -5,3 +5,19 @@
     inset: 0;
     position: absolute;
 }
+
+.vc-wpfree-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    align-items: start;
+    margin-bottom: 20px;
+}
+
+.vc-wpfree-localwp-container {
+    transition: 0.25s;
+
+    &:hover {
+        transform: scale(1.02);
+    }
+}
