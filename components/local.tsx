@@ -9,7 +9,7 @@ import { Paragraph } from "@components/Paragraph";
 import { useAwaiter } from "@utils/react";
 import { PluginNative } from "@utils/types";
 import { RenderModalProps } from "@vencord/discord-types";
-import { Modal, showToast, Toasts } from "@webpack/common";
+import { Modal, showToast } from "@webpack/common";
 
 import { cl } from "..";
 
@@ -22,7 +22,7 @@ interface Props {
 
 export function ViewLocalWallpapers({ props, onSelect }: Props) {
     const [localWallpapers] = useAwaiter(Native.listLocalWallpapers, {
-        onError: e => showToast(String(e), Toasts.Type.FAILURE, { duration: 10_000 }),
+        onError: e => showToast({ text: (String(e)), variant: "critical" }),
         fallbackValue: [],
     });
 
@@ -42,7 +42,7 @@ export function ViewLocalWallpapers({ props, onSelect }: Props) {
                     variant: "primary",
                     async onClick() {
                         const error = await Native.openLocalWallpapersDirectory();
-                        if (error) showToast(String(error), Toasts.Type.FAILURE, { duration: 10_000 });
+                        if (error) showToast({ text: String(error), variant: "critical" });
                     },
                 },
             ]}
